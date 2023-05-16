@@ -1,0 +1,42 @@
+<ion-header [translucent]="true">
+    <ion-toolbar>
+      <ion-title>
+        Meus gatos
+      </ion-title>
+    </ion-toolbar>
+  </ion-header>
+  
+  <ion-content [fullscreen]="true">
+    <ion-card *ngIf="authService.getLoggedUser().info.cats.length == 0">
+      <ion-card-header color="sitters">
+        <ion-card-subtitle>Você não possui cats cadastrados:</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item>
+          <ion-label>Por favor, adicione a sua família!!!</ion-label>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+    <ion-card *ngFor="let cat of cats">
+      <ion-card-header color="sitters">
+        <ion-card-subtitle>> {{cat.name}}</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item>
+          <ion-label>
+            <p><b>Data de Nascimento:</b>{{ cat.birthday | date:'dd/MM/yyyy'}}</p>
+            <p><b>Gênero:</b> {{ cat.gender }}</p>
+          </ion-label>
+          <ion-button color="sitters" slot="end" (click)="showDetail(cat)" routerDirection="forward">
+            <ion-icon name="ellipsis-horizontal"></ion-icon>
+          </ion-button>
+        </ion-item>  
+      </ion-card-content>
+    </ion-card>
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+      <ion-fab-button (click)="addCat()" color="sitters">
+        <ion-icon name="add-outline"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>  
+  </ion-content>
+  

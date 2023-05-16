@@ -1,0 +1,194 @@
+<ion-header [translucent]="true">
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button text="Voltar" defaultHref="/tabs/tab3"></ion-back-button>
+          </ion-buttons>
+      <ion-title *ngIf="registerDailyRate">
+        Cadastrar Valor Diária
+        </ion-title>
+
+        <ion-title *ngIf="queryReport">
+          Consulta de Agendamentos
+        </ion-title>
+
+        <ion-title *ngIf="enableRegisterForm">
+          Novo Cadastro
+        </ion-title>
+
+        <ion-title *ngIf="manageRegistration">
+          Cadastros
+        </ion-title>
+
+        <ion-title *ngIf="editPlan && login.isAdmin">
+          Editar plano
+        </ion-title>
+        <ion-buttons slot="end" *ngIf="editPlan">
+          <ion-button (click)="refreshSubscription()">
+            <ion-icon name="refresh-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons> 
+    </ion-toolbar> 
+</ion-header>
+
+    <ion-content [fullscreen]="true">
+      <div class="spacer" style="height: 15px;"></div>
+      <form (ngSubmit)="processDailyRate()" *ngIf="registerDailyRate" [formGroup]="updateDailyForm">
+      <ion-card *ngIf="registerDailyRate">
+        <ion-card-header *ngIf="registerDailyRate">
+          <ion-card-subtitle>Diária:</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content *ngIf="registerDailyRate">
+            <ion-list lines="full" class="ion-no-margin ion-no-padding">
+              <ion-item>
+                <ion-icon slot="start" name="cash-outline"></ion-icon>
+                <ion-label>Atual: {{authService.getLoggedUser().info.company.dailyValue | currency:'BRL' }}</ion-label>
+              </ion-item>
+              <ion-item>
+                <ion-icon slot="start" name="cash-outline"></ion-icon>
+                <ion-label>Novo: {{ updateDailyForm.get('dailyValue').value | currency:'BRL' }}</ion-label>
+              </ion-item>
+                <ion-item>
+                    <ion-label position="fixed">Valor:</ion-label>
+
+                    <ion-input formControlName="dailyValue" 
+                      required placeholder="Digite o valor da diária..." type="number" text-right>
+                    </ion-input>
+                </ion-item>
+                <p slot="end" *ngIf="updateDailyForm.get('dailyValue').errors && updateDailyForm.get('dailyValue').dirty">Valor não é válido.</p>
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
+        <ion-card *ngIf="registerDailyRate">
+          <ion-card-header *ngIf="registerDailyRate">
+            <ion-card-subtitle>Opções:</ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content *ngIf="registerDailyRate">
+              <ion-list lines="full" class="ion-no-margin ion-no-padding">
+                  <ion-item>
+                    <ion-label> É um valor mínimo?</ion-label>
+                    <ion-checkbox formControlName="isMinimalValue" [value]="authService.getLoggedUser().info.company.isMinimalValue"></ion-checkbox>
+                  </ion-item>
+              </ion-list>
+              <ion-button expand="block" type="submit" class="ion-no-margin" disabled="{{!updateDailyForm.valid}}" color="sitters">CADASTRAR</ion-button>
+            </ion-card-content>
+          </ion-card>
+      </form>
+     
+      <ion-card *ngIf="queryReport">
+        <ion-card-header *ngIf="queryReport">
+          <ion-card-subtitle>Consulta:</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content *ngIf="queryReport">
+          <form onsubmit="processQueryReport(event)" *ngIf="queryReport">
+              <ion-list lines="full" class="ion-no-margin ion-no-padding">
+              </ion-list>
+              <ion-button expand="block" type="submit" class="ion-no-margin">CADASTRAR</ion-button>
+          </form>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card *ngIf="enableRegisterForm">
+        <ion-card-header *ngIf="enableRegisterForm">
+          <ion-card-subtitle>Adicionar Sitter:</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content *ngIf="enableRegisterForm">
+          <form (ngSubmit)="processRegister()" *ngIf="enableRegisterForm" [formGroup]="registerForm">
+              <ion-list lines="full" class="ion-no-margin ion-no-padding">
+                  <ion-item>
+                    <ion-label position="floating">Nome Completo</ion-label>
+                    <ion-input formControlName="name" type="text" [value]="registerForm.get('name').value | titlecase">
+                    </ion-input>
+                  </ion-item>
+                  <p slot="end" *ngIf="registerForm.get('name').errors && registerForm.get('name').dirty">Nome não é válido.</p>
+                  <ion-item>
+                    <ion-label position="floating">Endereço de E-mail</ion-label>
+                    <ion-input formControlName="email" type="email"></ion-input>
+                  </ion-item>
+                  <p slot="end" *ngIf="registerForm.get('email').errors && registerForm.get('email').dirty">E-mail não é válido.</p>                  
+                  <ion-item>
+                    <ion-label position="floating">Senha inicial</ion-label>
+                    <ion-input formControlName="password" type="password"></ion-input>
+                  </ion-item>
+                  <p slot="end" *ngIf="registerForm.get('password').errors && registerForm.get('password').dirty">Senha não é válida.</p>
+              </ion-list>
+              <ion-button expand="block" type="submit" class="ion-no-margin" disabled="{{!registerForm.valid}}" color="sitters">CADASTRAR</ion-button>
+          </form>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card *ngIf="manageRegistration">
+        <ion-card-header *ngIf="manageRegistration">
+          <ion-card-subtitle>Seu time de Sitter's:</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card *ngIf="(logins | async)?.length == 0;">
+          <ion-card-header color="sitters">
+            <ion-card-subtitle>Você não possui funcionárias</ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-item>
+              <ion-label>Você pode cadastrá-las no menu de gestão</ion-label>
+            </ion-item>
+          </ion-card-content>
+        </ion-card>
+        <ion-card-content *ngIf="manageRegistration">
+          <ion-list *ngIf="manageRegistration">
+            <ion-item *ngFor="let sitterLogin of logins | async">
+              <ion-label>
+                <span>{{sitterLogin.login}}</span><br>
+                <p>{{sitterLogin.name}}</p>
+              </ion-label>
+              <br>              
+              <ion-button [color]="getColorByLoginState(sitterLogin)" slot="end" (click)="presentLoginStateConfirmation(sitterLogin)">
+                <ion-icon name="checkbox-outline"></ion-icon>      
+              </ion-button>
+            </ion-item>
+          </ion-list>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card *ngIf="editPlan && login.isAdmin">
+        <ion-card-header *ngIf="editPlan">
+          <ion-card-subtitle>Seu plano atual:</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content *ngIf="editPlan">
+          <ion-item *ngIf="login.info.company.allowList">
+            <ion-icon name="person-outline"></ion-icon>
+            <ion-label>
+              <span>&nbsp;Empresa parceira</span>
+            </ion-label>
+            <ion-label>
+              <span>&nbsp;Plano liberado</span>
+            </ion-label>
+          </ion-item>
+          <ion-item *ngIf="!login.info.company.allowList">
+            <ion-icon name="person-outline"></ion-icon>
+            <ion-label>
+              <span>&nbsp;{{login.subscription.title}}</span>
+            </ion-label>
+            <ion-label *ngIf="login.subscription.state == 'invalid'">
+              <span>&nbsp;Plano Sitter básico (free)</span>
+            </ion-label>
+          </ion-item>
+          <ion-item *ngIf="!login.info.company.allowList">
+            <ion-icon name="card-outline"></ion-icon>
+            <ion-label>
+              <span *ngIf="login.subscription.state == 'owned'">&nbsp; Status: Válido</span>
+              <span *ngIf="login.subscription.state == 'valid'">&nbsp; Status: Pendente</span>
+              <span *ngIf="login.subscription.state != 'valid' && login.subscription.state != 'owned'">&nbsp; Status: Análise</span>
+            </ion-label>
+          </ion-item>
+          <ion-button expand="full" (click)="store.manageSubscriptions()" color="sitters" *ngIf="!login.info.company.allowList && login.subscription.state != 'invalid'">
+            Editar
+          </ion-button>
+          <ion-item *ngIf="!login.info.company.allowList && login.subscription?.canPurchase == true">
+            <ion-icon name="cart-outline"></ion-icon>
+            <ion-label>
+              <span>Comprar Sitter plano básico 1</span><br>
+            </ion-label>  
+          </ion-item>
+          <ion-button expand="full" (click)="sitterPurchase('meowsitters.sitter.basic2')" color="sitters" *ngIf="login.subscription?.canPurchase == true">
+            COMPRAR
+           </ion-button>
+        </ion-card-content>
+      </ion-card>
+    </ion-content>

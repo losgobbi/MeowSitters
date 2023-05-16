@@ -1,0 +1,22 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Termo de Uso
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content [fullscreen]="true">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-subtitle>Política Privacidade/Termo de Consentimento</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+        {{config.getConsent()}}
+    </ion-card-content>
+    <ion-card-content>
+      {{config.getPrivacy()}}
+    </ion-card-content>
+  </ion-card>
+  <ion-button expand="full" (click)="accept()" color="sitters" *ngIf="!auth.getLoggedUser().consent">ACEITO</ion-button>
+  <ion-button expand="full" (click)="accept()" color="sitters" [routerLink]="['/tab4']" *ngIf="auth.getLoggedUser().consent && !consenting">VOLTAR</ion-button>
+</ion-content>

@@ -1,0 +1,56 @@
+<ion-header [translucent]="true">
+  </ion-header>
+<ion-content [fullscreen]="true">
+      <ion-card>
+      <ion-card-header>
+        <img src="../../../assets/imgs/logoCat.png" class="logoImg">
+        <img src="../../../assets/imgs/logoName.png" class="logoName">
+      </ion-card-header>
+      <ion-card-content class="intro ion-text-center">
+        <ion-text *ngIf="option == 'none'">
+          Bem-vindo a plataforma de agendamentos de CatSitting.
+        </ion-text>
+        <ion-text *ngIf="option == 'client'">
+          <br>Solicite o seu agendamento!<br>
+        </ion-text>
+        <ion-text *ngIf="option == 'sitter'">
+          Aplicativo para auxiliar os encontros das Cat Sitter's com os nossos queridos felinos. Para se registrar entre em contato conosco: @meowsitters :)
+        </ion-text>
+        <form [formGroup]="loginForm" class="loginContent" *ngIf="option != 'none'">
+          <ion-list lines="full" class="ion-no-margin ion-no-padding">
+              <ion-item>
+                <ion-label position="floating">E-mail</ion-label>
+                <ion-input formControlName="email" type="email"></ion-input>
+              </ion-item>
+              <p slot="end" *ngIf="loginForm.get('email').errors && loginForm.get('email').dirty">
+                E-mail não é válido.
+              </p>
+              <ion-item>
+                <ion-label position="floating">Senha</ion-label>
+                <ion-input formControlName="password"  type="password"></ion-input>
+              </ion-item>
+              <p slot="end" *ngIf="loginForm.get('password').errors && loginForm.get('password').dirty">
+                Senha não é válida.
+              </p>
+          </ion-list>
+          <div class="spacer" style="height: 10px;"></div>
+          <ion-button expand="block" (click)="processLogin()" type="submit" class="ion-no-margin" disabled="{{!loginForm.valid}}" color="sitters">LOGAR</ion-button>
+          <div class="spacer" style="height: 10px;" *ngIf="option == 'client'"></div>
+          <ion-button expand="block" (click)="registerLogin()" type="submit" class="ion-no-margin" disabled="{{!loginForm.valid}}" color="sitters" *ngIf="option == 'client'">CADASTRAR</ion-button>
+          <div class="spacer" style="height: 10px;"></div>
+          <ion-button expand="block" (click)="handleOption('none')" class="ion-no-margin" color="sitters">VOLTAR</ion-button>
+        </form>
+        <ion-text *ngIf="option == 'none' && authService.checkingSession">
+          <br/>Inicializando...aguarde...<br/>
+        </ion-text>
+        <ion-spinner *ngIf="option == 'none' && authService.checkingSession"></ion-spinner>
+    </ion-card-content>
+    <ion-list lines="full" class="loginContent ion-no-margin ion-no-padding" *ngIf="option == 'none' && !authService.checkingSession && (authService.getLoggedUser() === undefined || authService.getLoggedUser() === null)">
+      <h6 class="who ion-text-center">
+        ESCOLHA UMA OPÇÃO:
+      </h6>
+      <ion-button expand="full" (click)="handleOption('sitter')" color="sitters">SOU SITTER</ion-button>
+      <ion-button expand="full" (click)="handleOption('client')" color="sitters">SOU CLIENTE</ion-button>  
+    </ion-list>
+  </ion-card>
+</ion-content>

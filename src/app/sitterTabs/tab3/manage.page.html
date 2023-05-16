@@ -1,0 +1,53 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Gestão
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-item-group>
+    <ion-item-divider>
+      <ion-label>Meu plano:</ion-label>
+    </ion-item-divider>
+    <ion-item>
+      <ion-label>
+        <h2>Editar</h2>
+      </ion-label>
+      <ion-button color="sitters" slot="end" [routerLink]="['employee', 'edit_plan']" routerDirection="forward">
+        <ion-icon name="create-outline"></ion-icon>
+      </ion-button>
+    </ion-item>
+    <ion-item-divider>
+      <ion-label>Financeiro:</ion-label>
+    </ion-item-divider>
+    <ion-item>
+      <ion-label>
+        <h2>Cadastrar valor diária</h2>
+      </ion-label>
+      <ion-button color="sitters" slot="end" [routerLink]="['employee', 'register_daily_rate']" routerDirection="forward">
+        <ion-icon name="wallet-outline"></ion-icon>
+      </ion-button>
+    </ion-item>
+    <ion-item-divider>
+      <ion-label>Funcionárias:</ion-label>
+    </ion-item-divider>
+    <ion-item>
+      <ion-label>
+        <h2>Cadastrar</h2>
+      </ion-label>
+      <ion-button color="sitters" slot="end" [routerLink]="['employee', 'register']" routerDirection="forward">
+        <ion-icon name="people-outline"></ion-icon>
+      </ion-button>
+    </ion-item>
+    <ion-item>
+      <ion-label>
+        <h2>Ativar/Desativar Cadastro</h2>
+      </ion-label>
+      <ion-button color="sitters" slot="end" [routerLink]="['employee', 'manage_registration']" routerDirection="forward">
+        <ion-icon name="person-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-item>
+  </ion-item-group>
+</ion-content>

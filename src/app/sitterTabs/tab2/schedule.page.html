@@ -1,0 +1,36 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Roteiro
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="updateDailySchedules($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <ion-item-group>
+    <ion-reorder-group (ionItemReorder)="doReorder($event)" disabled="false">
+      <ion-item-divider>
+        <ion-label>Agenda do dia {{currentDate | date:'dd/MM'}}:</ion-label>
+      </ion-item-divider>
+      <ion-item *ngIf="dailySchedules.length == 0">
+        <ion-label>
+          <h4>Não existe agendamentos para hoje.</h4>
+        </ion-label>
+      </ion-item>
+      <ion-item *ngFor="let schedule of dailySchedules">
+        <ion-label>
+          <span>Cliente: {{schedule.client.name}}</span>
+          <p>Bairro: {{schedule.client.info.addr.neighborhood}}</p>
+          <p>Endereço: {{schedule.client.info.addr.street}}</p>
+          <p>Nro: {{schedule.client.info.addr.streetnumber}}</p>
+          <p>Compl: {{schedule.client.info.addr.streetcompl}}</p>
+        </ion-label>
+        <ion-reorder slot="end" *ngIf="canReorderSchedule(schedule)"></ion-reorder>
+      </ion-item>
+  </ion-reorder-group>
+  </ion-item-group>
+  <ion-button expand="full" (click)="saveSchedule()" [disabled]="disablesave" color="sitters">SALVAR PROGRAMAÇÃO</ion-button>
+</ion-content>

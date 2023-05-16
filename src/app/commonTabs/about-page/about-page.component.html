@@ -1,0 +1,44 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Ajuda
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-card>
+    <img src="../../../assets/imgs/about.png" style="display: block; margin-left: auto; margin-right: auto;"/>
+    <ion-card-header>
+      <ion-card-subtitle>História:</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <p>Plataforma de agendamento @meowsitters: aplicativo para auxiliar os encontros das Cat Sitter's com os nossos queridos felinos. Quer se juntar a nós?</p>
+    </ion-card-content>
+  </ion-card>
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Suporte</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-button expand="block" fill="solid" slot="end" color="sitters" href="mailto:xxx@gmail.com">
+          <ion-icon name="arrow-forward-outline"></ion-icon>
+        </ion-button>
+        <ion-label>Obter ajuda</ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-button expand="block" fill="solid" slot="end" color="sitters" [routerLink]="['/policy']">
+          <ion-icon name="arrow-forward-outline"></ion-icon>
+        </ion-button>
+        <ion-label>Termos de Uso</ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-note slot="end">
+          <h2>0.0.1</h2>
+        </ion-note>
+        <ion-label>Versão</ion-label>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

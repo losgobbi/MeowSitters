@@ -1,0 +1,39 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismissModal()">Fechar</ion-button>
+    </ion-buttons>
+    <ion-title>
+      Adicionar Cat
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+  <ion-content [fullscreen]="true">
+    <div class="spacer" style="height: 15px;"></div>
+    <ion-card>
+      <ion-card-content>
+        <form (ngSubmit)="processForm()" [formGroup]="registerCat">
+            <ion-list lines="full" class="ion-no-margin ion-no-padding">
+                <ion-item>
+                  <ion-label position="floating">Nome</ion-label>
+                  <ion-input formControlName="name" type="text" [value]="registerCat.get('name').value | titlecase"></ion-input>
+                </ion-item>
+                <p slot="end" *ngIf="registerCat.get('name').errors && registerCat.get('name').dirty">Nome não é válido.</p>
+                <ion-item>
+                  <ion-label position="floating">Data de Nascimento</ion-label>
+                  <ion-datetime displayFormat="D/MM/YYYY" formControlName="birthdate" required></ion-datetime>
+                </ion-item>
+                <p slot="end" *ngIf="registerCat.get('birthdate').errors && registerCat.get('birthdate').dirty">Data de nascimento não é válida.</p>
+                <ion-item>
+                  <ion-label>Gênero: {{ gender }}</ion-label>
+                  <ion-button slot="end" color="sitters" (click)="presentActionSheet()" disabled="{{!registerCat.valid}}">
+                    <ion-icon name="chevron-forward-outline"></ion-icon>
+                  </ion-button>
+                </ion-item>
+            </ion-list>
+            <ion-button expand="block" type="submit" class="ion-no-margin" disabled="{{!registerCat.valid || !gender}}" color="sitters">CADASTRAR</ion-button>
+        </form>
+      </ion-card-content>
+    </ion-card>
+  </ion-content>

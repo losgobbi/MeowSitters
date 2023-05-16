@@ -1,0 +1,91 @@
+<ion-header [translucent]="true">
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button text="Voltar" defaultHref="/"></ion-back-button>
+          </ion-buttons>
+    <ion-title>
+        Detalha Agendamento
+      </ion-title>
+    </ion-toolbar>
+    <ion-content [fullscreen]="true">
+      <ion-card>
+        <ion-card-header color="sitters">
+          <ion-card-subtitle>Agendamento:</ion-card-subtitle>
+        </ion-card-header>
+        <ion-item>
+          <ion-label>
+            <h3> {{ detail.createDate | date:'dd/MM/yy - HH:mm' }} </h3>
+          </ion-label>
+          <ion-icon name="calendar-outline" slot="start"></ion-icon>
+        </ion-item>
+
+        <ion-card-header color="sitters">
+          <ion-card-subtitle>Cats: {{detail.client.info.cats | catsSplitComma}}</ion-card-subtitle>
+        </ion-card-header>
+
+        <ion-item *ngIf="authService.getLoggedUser().type == 0" disabled="{{disableEditSitter}}">
+          <ion-label>Sitter:</ion-label>
+          <ion-select #sitterSelect value="{{!detail.sitter ? '' : detail.sitter.login}}" (ionChange)="configureStatus(sitterSelect, statusSelect)" interface="popover">
+            <ion-select-option value="{{sitter.login}}" *ngFor="let sitter of sitters">{{sitter.name}}</ion-select-option>
+          </ion-select>
+          <ion-icon name="person-add-outline" slot="start"></ion-icon>
+        </ion-item>
+
+        <ion-item disabled="{{disableEditStatus}}">
+          <ion-label>Status:</ion-label>
+          <ion-select #statusSelect value="{{detail.status}}" (ionChange)="statusChanged(statusSelect)" interface="popover">
+            <ion-select-option [value]=0 disabled=true>Pendente</ion-select-option>
+            <ion-select-option [value]=1 [disabled]="blockRedirectSchedule">Encaminhar</ion-select-option>
+            <ion-select-option [value]=2 [disabled]="blockCancelSchedule">{{!disableEditStatus ? "Cancelar" : "Cancelado"}}</ion-select-option>
+            <ion-select-option [value]=3 [disabled]="blockConfirmSchedule">{{!disableEditStatus ? "Confirmar" : "Confirmado"}}</ion-select-option>
+            <ion-select-option [value]=8 [disabled]="true">Realizado</ion-select-option>
+            <ion-select-option [value]=4 [disabled]="true">Solic. Cancelamento</ion-select-option>
+            <ion-select-option [value]=5 [disabled]="true">Aguard. Orçamento</ion-select-option>
+            <ion-select-option [value]=6 [disabled]="true">Orçado</ion-select-option>
+            <ion-select-option [value]=7 [disabled]="true">Não realizado</ion-select-option>
+          </ion-select>
+          <ion-icon name="construct-outline" slot="start"></ion-icon>
+        </ion-item>
+  
+        <ion-item>
+          <ion-label>
+            Cliente: {{detail.client.name}}
+          </ion-label>
+          <ion-icon name="person-outline" slot="start"></ion-icon>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>
+            Datas da viagem:
+            <div class="spacer" style="height: 10px;"></div>
+            <p *ngFor="let dt of detail.travelDate">{{dt | date:'dd/MM/yy'}}</p>
+          </ion-label>
+          <ion-icon name="arrow-forward-outline" slot="start"></ion-icon>
+        </ion-item>
+  
+        <ion-item>
+          <ion-label>
+            Data de retorno:
+            <div class="spacer" style="height: 10px;"></div>
+            <p>{{detail.returnDate | date:'dd/MM/yy'}}</p>
+          </ion-label>
+          <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+        </ion-item>
+
+        <ion-card-content>
+          <b>Devolução de chave: </b> {{detail.howToReturnKey}}
+        </ion-card-content>
+
+        <ion-item *ngIf="detail.status == 5">
+          <ion-label>Valor do orçamento:</ion-label>
+          <ion-input [(ngModel)]="infoDailyValue"
+            required placeholder="Valor dessa diária..." type="number" text-right>
+          </ion-input>
+         </ion-item>
+        <ion-button expand="full" (click)="updateSchedule()" [disabled]="blockUpdateSchedule" color="sitters" *ngIf="detail.status != 5">ATUALIZAR</ion-button>
+        <ion-button expand="full" (click)="updateSchedule()" [disabled]="blockUpdateSchedule || !infoDailyValue" color="sitters" *ngIf="detail.status == 5">ATUALIZAR</ion-button>
+      </ion-card>
+    </ion-content>
+  </ion-header>
+
+

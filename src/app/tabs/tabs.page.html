@@ -1,0 +1,45 @@
+<ion-tabs>
+    <ion-tab-bar slot="bottom" *ngIf="authService.getLoggedUser().isRoleSitter">
+      <ion-tab-button tab="tab1" style="--color-selected:#f9b44a">
+        <ion-icon name="calendar"></ion-icon>
+        <ion-label>Agendamentos</ion-label>
+      </ion-tab-button>
+
+      <ion-tab-button tab="tab2" style="--color-selected:#f9b44a">
+        <ion-icon src="/assets/icon/dailyschedule.svg"></ion-icon>
+        <ion-label>Roteiro</ion-label>
+      </ion-tab-button>
+
+      <ion-tab-button tab="tab3" *ngIf="authService.getLoggedUser().isAdmin" style="--color-selected:#f9b44a">
+        <ion-icon name="build"></ion-icon>
+        <ion-label>Gestão</ion-label>
+      </ion-tab-button>
+
+      <ion-tab-button tab="tab4" style="--color-selected:#f9b44a">
+        <ion-icon name="information-circle-outline"></ion-icon>
+        <ion-label>Sobre</ion-label>
+      </ion-tab-button>
+    </ion-tab-bar>
+
+    <ion-tab-bar slot="bottom" *ngIf="!authService.getLoggedUser().isRoleSitter">
+      <ion-tab-button tab="tab1" style="--color-selected:#f9b44a">
+        <ion-icon name="calendar"></ion-icon>
+        <ion-label>Agendar</ion-label>
+      </ion-tab-button>
+
+      <ion-tab-button tab="tab2" style="--color-selected:#f9b44a">
+        <ion-icon name="person-outline"></ion-icon>
+        <ion-label>Meus Dados</ion-label>
+      </ion-tab-button>
+
+      <ion-tab-button tab="tab3" style="--color-selected:#f9b44a">
+        <ion-icon name="paw"></ion-icon>
+        <ion-label>Meus Cats</ion-label>
+      </ion-tab-button>
+
+      <ion-tab-button tab="tab4" style="--color-selected:#f9b44a">
+        <ion-icon name="information-circle-outline"></ion-icon>
+        <ion-label>Sobre</ion-label>
+      </ion-tab-button>
+    </ion-tab-bar>
+</ion-tabs>

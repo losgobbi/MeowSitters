@@ -1,0 +1,20 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismissModal()">Fechar</ion-button>
+    </ion-buttons>
+    <ion-title>
+      Data agendamento
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="false">
+  <ion-calendar 
+    [(ngModel)]="dateValue" 
+    [options]="optionsMulti" 
+    [type]="type" 
+    [format]="'YYYY-MM-DD HH:mm:ss'">
+  </ion-calendar>
+  <ion-button expand="full" (click)="dismissModal()" color="sitters">SELECIONAR</ion-button>
+</ion-content>

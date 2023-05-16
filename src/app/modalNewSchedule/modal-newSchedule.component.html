@@ -1,0 +1,154 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismissModal()">Fechar</ion-button>
+    </ion-buttons>
+    <ion-title *ngIf="searchMode == false">
+      Agendar
+    </ion-title>
+    <ion-title *ngIf="searchMode == true">
+      Empresas
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-card>
+    <ion-item>
+      <ion-icon name="location-outline" slot="start"></ion-icon>
+      <ion-label>
+        {{this.authService.getLoggedUser().info.addr.city}}/{{this.authService.getLoggedUser().info.addr.state}}
+      </ion-label>
+    </ion-item>
+  </ion-card>
+  <ion-card *ngIf="(companies| async)?.length == 0;">
+    <ion-card-header color="sitters">
+      <ion-card-subtitle>Nenhuma Sitter cadastrada para a sua localidade.</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-label>A sua região ainda não possui parceiras.</ion-label>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+  <ion-card *ngFor="let company of companies | async">
+    <ion-card-content *ngIf="company.visible">
+          <ion-item>
+            <ion-avatar slot="start">
+              <img src="{{company.iconthumbURL}}">
+            </ion-avatar>
+            <ion-label>{{ company.name }}</ion-label>
+          </ion-item>
+          <ion-item *ngIf="searchMode == true">
+            <ion-icon name="information-outline"></ion-icon>
+            <ion-label>
+              Sobre a empresa:
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-label>
+              <p>Desde: xx/xx/xxxx</p>
+              <p *ngIf="company.isMinimalValue">Valor diária: a partir de {{ company.dailyValue | currency:'BRL'}}</p>
+              <p *ngIf="!company.isMinimalValue">Valor diária: {{ company.dailyValue | currency:'BRL'}}</p>
+            </ion-label>
+          </ion-item>
+          <ion-item *ngIf="searchMode == true && company.skills">
+            <ion-icon name="library-outline"></ion-icon>
+            <ion-label>
+              &nbsp; Cursos/Habilidades:
+            </ion-label>
+          </ion-item>
+          <ion-item *ngIf="searchMode == true && company.skills">
+            <ion-label>
+              <p *ngFor="let sk of company.skills.split(',')">{{sk}}</p>
+            </ion-label>
+          </ion-item>
+          <ion-item *ngIf="searchMode == false">
+            <ion-label><h4>Selecionar:</h4></ion-label>
+            <ion-button color="sitters" slot="end" (click)="setCompany(company, btnCompany)" #btnCompany>
+              <ion-icon name="paw-outline"></ion-icon>
+            </ion-button>
+          </ion-item>   
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card *ngIf="newSchedule.company!==undefined && searchMode == false">
+    <ion-card-content *ngIf="newSchedule.company!==undefined && searchMode == false">
+      <ion-item-divider *ngIf="newSchedule.company!==undefined && searchMode == false">
+        <ion-label>
+          Dados agendamento:
+        </ion-label>
+      </ion-item-divider>
+      <ion-item *ngIf="newSchedule.company!==undefined && searchMode == false">
+        <ion-label>Data da viagem:</ion-label>
+        <ion-button type="submit" class="ion-no-margin" (click)="chooseDate('multiDate')" color="sitters">...</ion-button>
+      </ion-item>
+      <ion-item *ngIf="newSchedule.company!==undefined && searchMode == false">
+        <ion-label>Data de retorno:</ion-label>
+        <ion-button type="submit" class="ion-no-margin" (click)="chooseDate('singleDate')" color="sitters">...</ion-button>
+      </ion-item>
+      <ion-item *ngIf="newSchedule.company!==undefined && searchMode == false">
+        <ion-label>Devolução de chaves:</ion-label>
+        <ion-button type="submit" class="ion-no-margin" (click)="chooseHowToReturnKey()" color="sitters">...</ion-button>
+      </ion-item>
+      </ion-card-content>
+  </ion-card>
+
+  <ion-card *ngIf="checkSchedule('header') && searchMode == false" >
+    <ion-card-header color="sitters">
+      <ion-card-subtitle>  Novo agendamento para:</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item-group>
+        <ion-item *ngIf="checkSchedule('company') && searchMode == false">
+          <ion-icon name="logo-octocat" slot="start"></ion-icon>
+          <ion-label>
+            <div class="ion-text-end">
+              <p>{{this.newSchedule.company.name}}</p>
+            </div>
+          </ion-label>
+        </ion-item>
+        <ion-item *ngIf="checkSchedule('travelDate') && searchMode == false">
+          <ion-icon name="arrow-forward-outline" slot="start"></ion-icon>
+          <ion-label>
+            <div class="ion-text-end">
+              <p *ngFor="let dt of this.newSchedule.travelDate">{{dt | date:'dd/MM/yy'}}</p>
+            </div>
+          </ion-label>
+        </ion-item>
+        <ion-item *ngIf="checkSchedule('returnDate') && searchMode == false">
+          <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+          <ion-label>
+            <div class="ion-text-end">
+              <p>{{this.newSchedule.returnDate | date:'dd/MM/yy'}}</p>
+            </div>
+          </ion-label>
+        </ion-item>
+        <ion-item *ngIf="checkSchedule('price') && searchMode == false">
+          <ion-icon name="cash-outline" slot="start"></ion-icon>
+          <ion-label>
+            <div class="ion-text-end">
+              <h6>Valor: {{ this.newSchedule.company.dailyValue * this.newSchedule.travelDate.length | currency:'BRL'}}</h6>
+            </div>
+          </ion-label>
+        </ion-item>
+        <ion-item *ngIf="checkSchedule('keys') && searchMode == false">
+          <ion-icon name="key-outline" slot="start"></ion-icon>
+          <ion-label>
+            <div class="ion-text-end">
+              <p>{{this.newSchedule.howToReturnKey}}</p>
+            </div>
+          </ion-label>
+        </ion-item>
+      </ion-item-group>
+    </ion-card-content>
+  </ion-card>
+  <ion-button expand="block" type="submit" class="ion-no-margin" (click)="presentAlertConfirm()"
+   disabled="{{checkSchedule('btn') ? false : true}}" color="sitters" *ngIf="searchMode == false && !orderMode">
+    AGENDAR
+  </ion-button>
+  <ion-button expand="block" type="submit" class="ion-no-margin" (click)="prepareOrder()"
+  disabled="{{checkSchedule('btn') ? false : true}}" color="sitters" *ngIf="searchMode == false && orderMode">
+   ORÇAMENTO
+ </ion-button>
+</ion-content>

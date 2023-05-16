@@ -1,0 +1,179 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Agendar
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="createModal('search')">
+        <ion-icon name="search-outline"></ion-icon>
+      </ion-button>
+      <ion-button (click)="logout()">
+        <ion-icon slot="icon-only" name="exit-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="updateClientSchedules($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <ion-card>
+    <ion-card-header>
+      <ion-card-subtitle *ngIf="authService.getLoggedUser().isRoleSitter">Olá, {{authService.getLoggedUser().name}} | {{authService.getLoggedUser().info.company.name}}</ion-card-subtitle>
+      <ion-card-subtitle *ngIf="!authService.getLoggedUser().isRoleSitter">Olá, {{authService.getLoggedUser().name}}</ion-card-subtitle>
+    </ion-card-header>
+  </ion-card>
+  <ion-card *ngIf="(schedules | async)?.length == 0;">
+    <ion-card-header color="sitters">
+      <ion-card-subtitle>Sem agendametos</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item>
+        <ion-label>Realize seu primeiro agendamento</ion-label>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+  <ion-card *ngFor="let schedule of schedules | async">
+    <ion-card-header color="sitters">
+      <ion-card-subtitle>> Agendamento:</ion-card-subtitle>
+    </ion-card-header>
+    <ion-item>
+      <ion-icon name="calendar-outline" slot="start"></ion-icon>
+      <ion-label>
+        <u><h3>SOLICITADO EM: </h3></u>
+        <p>{{ schedule.createDate | date:'dd/MM/yy - HH:mm' }}</p>
+      </ion-label>
+    </ion-item>
+    <ion-item>
+      <ion-label>
+        <u><h3> {{ schedule.company.name }} </h3></u>
+      </ion-label>
+      <ion-icon name="paw-outline" slot="start"></ion-icon>
+    </ion-item>
+    <ion-card-content>
+      <ion-item>
+        <ion-label>
+          <h5>> Datas da viagem:</h5>
+          <p *ngFor="let dt of schedule.travelDate">{{ dt | date:'dd/MM/yy' }}</p>
+          <h5>> Data de retorno:</h5>
+          <p>{{ schedule.returnDate | date:'dd/MM/yy' }}</p>
+          <h5>Cats: {{schedule.client.info.cats | catsSplitComma }}</h5>
+          <h5>Atendente: {{ schedule.sitter ? schedule.sitter.name : '---'}}</h5>
+          <h2 *ngIf="schedule.status != 5">
+            <b>VALOR:</b> 
+            {{ schedule.scheduleValue | currency:'BRL'}}
+          </h2>
+          <h2 *ngIf="schedule.status == 5">
+            <b>VALOR:</b> ---
+          </h2>
+        </ion-label>
+      </ion-item>  
+    </ion-card-content>
+    <ion-footer>
+      <ion-row>
+        <ion-col>
+          <ion-item>
+            <ion-avatar slot="start">
+              <img src="../../../assets/imgs/pending0{{assetsNumber}}.png" *ngIf="schedule.status == 0"/>
+              <img src="../../../assets/imgs/forward0{{assetsNumber}}.png" *ngIf="schedule.status == 1"/>
+              <img src="../../../assets/imgs/cancel0{{assetsNumber}}.png" *ngIf="schedule.status == 2"/>
+              <img src="../../../assets/imgs/confirm0{{assetsNumber}}.png" *ngIf="schedule.status == 3"/>
+              <img src="../../../assets/imgs/pending0{{assetsNumber}}.png" *ngIf="schedule.status == 8"/> <!-- use pending for now -->
+              <img src="../../../assets/imgs/pending0{{assetsNumber}}.png" *ngIf="schedule.status == 4"/>
+              <img src="../../../assets/imgs/pending0{{assetsNumber}}.png" *ngIf="schedule.status == 5"/>
+              <img src="../../../assets/imgs/pending0{{assetsNumber}}.png" *ngIf="schedule.status == 6"/>
+              <img src="../../../assets/imgs/pending0{{assetsNumber}}.png" *ngIf="schedule.status == 7"/>
+            </ion-avatar>
+            <ion-label *ngIf="schedule.status == 0">STATUS: PENDENTE</ion-label>
+            <ion-label *ngIf="schedule.status == 1">STATUS: ENCAMINHADO</ion-label>
+            <ion-label *ngIf="schedule.status == 2">STATUS: CANCELADO</ion-label>
+            <ion-label *ngIf="schedule.status == 3">STATUS: CONFIRMADO</ion-label>
+            <ion-label *ngIf="schedule.status == 8">STATUS: REALIZADO</ion-label>
+            <ion-label *ngIf="schedule.status == 4">STATUS: SOLIC. CANCELAMENTO</ion-label>
+            <ion-label *ngIf="schedule.status == 5">STATUS: AGUAR. ORÇAMENTO</ion-label>
+            <ion-label *ngIf="schedule.status == 6">STATUS: ORÇADO</ion-label>
+            <ion-label *ngIf="schedule.status == 7">STATUS: NÃO REALIZADO</ion-label>
+          </ion-item>
+        </ion-col>
+        <ion-col>
+        </ion-col>
+      </ion-row>
+      <ion-row *ngIf="schedule.status == 0 || schedule.status == 1 || schedule.status == 3 || schedule.status == 6">
+        <ion-col>
+          <ion-item>
+            <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+            <ion-button color="sitters" (click)="userRequest(schedule, 'cancel')">
+              Solicitar Cancelamento?
+            </ion-button>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row *ngIf="schedule.status == 6">
+        <ion-col>
+          <ion-item>
+            <ion-icon name="checkmark-outline" slot="start"></ion-icon>
+            <ion-button color="sitters" (click)="userRequest(schedule, 'confirm')">
+              Confirmar?
+            </ion-button>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </ion-footer>
+  </ion-card>
+    <ion-card *ngIf="(schedules | async) == undefined"> 
+      <ion-card-header color="sitters">
+        <ion-card-subtitle>
+          <ion-skeleton-text animated style="width: 20%"></ion-skeleton-text>
+        </ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item>
+          <ion-avatar slot="start">
+            <ion-skeleton-text animated style="width: 65%"></ion-skeleton-text>
+          </ion-avatar>
+          <ion-label>
+            <h5>
+              <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
+            </h5>
+            <h5>          
+              <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
+            </h5>
+            <p>
+              <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
+            </p>
+          </ion-label>
+        </ion-item>  
+      </ion-card-content>
+    </ion-card>
+    <ion-card *ngIf="(schedules | async) == undefined"> 
+      <ion-card-header color="sitters">
+        <ion-card-subtitle>
+          <ion-skeleton-text animated style="width: 20%"></ion-skeleton-text>
+        </ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item>
+          <ion-avatar slot="start">
+            <ion-skeleton-text animated style="width: 65%"></ion-skeleton-text>
+          </ion-avatar>
+          <ion-label>
+            <h5>
+              <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
+            </h5>
+            <h5>          
+              <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
+            </h5>
+            <p>
+              <ion-skeleton-text animated style="width: 50%"></ion-skeleton-text>
+            </p>
+          </ion-label>
+        </ion-item>  
+      </ion-card-content>
+    </ion-card>
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="createModal('add')" color="sitters">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

@@ -1,0 +1,31 @@
+<ion-header [translucent]="true">
+    <ion-toolbar>
+      <ion-title>
+        Meus Dados
+      </ion-title>
+      <ion-buttons slot="end">
+        <ion-button (click)="refreshSubscription()">
+          <ion-icon name="refresh-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>  
+    </ion-toolbar>
+  </ion-header>
+  
+  <ion-content [fullscreen]="true">
+    <ion-card>
+      <ion-card-content>
+        <ion-item>
+            <ion-icon name="location-outline"></ion-icon>
+            <ion-label>
+              <u><h3> Meu endereço </h3></u>
+            </ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-label>
+            <div [innerHTML]=formatAddress()></div>
+          </ion-label>
+        </ion-item>  
+      </ion-card-content>
+    </ion-card>
+  </ion-content>
+  
